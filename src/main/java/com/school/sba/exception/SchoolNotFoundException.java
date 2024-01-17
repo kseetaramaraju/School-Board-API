@@ -10,11 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
-public class UserNotFoundById extends RuntimeException{
-
+public class SchoolNotFoundException extends RuntimeException {
+	
 	private String message;
-	
-	
-    
-	
+
 }

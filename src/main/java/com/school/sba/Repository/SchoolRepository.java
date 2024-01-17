@@ -8,6 +8,7 @@ import com.school.sba.entity.School;
 @Repository
 public interface SchoolRepository extends JpaRepository<School,Integer> {
 	
-	
+	//public boolean schoolPresentOrNot(String schoolName);
 
+	
 }

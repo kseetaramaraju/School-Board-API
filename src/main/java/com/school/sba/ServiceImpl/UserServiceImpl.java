@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
 				.contactNo(user.getContactNo())
 				.email(user.getEmail())
 				.userRole(user.getUserRole())
+				.isDeleted(user.isDeleted())
 				.build();
 	}
 
@@ -66,7 +67,9 @@ public class UserServiceImpl implements UserService {
 		{
 			if( userRepository.existsByUserRole(userRequest.getUserRole())==false)
 			{
-				User user = userRepository.save(mapToUser(userRequest));
+				User user = mapToUser(userRequest);
+				user.isDeleted();
+				user = userRepository.save(user);
 				structure.setStatus(HttpStatus.CREATED.value());
 				structure.setMessage("User Registration Done Successfully!1");
 				structure.setData(mapToUserResponse(user));

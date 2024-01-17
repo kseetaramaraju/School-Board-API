@@ -1,34 +1,24 @@
-package com.school.sba.entity;
+package com.school.sba.responsedto;
 
 import org.springframework.stereotype.Component;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Component
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 @Builder
-public class School {
+public class SchoolResponse {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int schoolId;
 	private String schoolName;
 	private long contactNo;
 	private String emailId;
 	private String address;
-	
-	
 	
 
 }

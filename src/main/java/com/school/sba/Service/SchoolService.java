@@ -3,27 +3,20 @@ package com.school.sba.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.school.sba.Repository.SchoolRepository;
 import com.school.sba.entity.School;
+import com.school.sba.requestdto.SchoolRequest;
+import com.school.sba.responsedto.SchoolResponse;
+import com.school.sba.utility.ResponseStructure;
 
-@Service
-public class SchoolService {
+
+public interface SchoolService {
+
+	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(SchoolRequest schoolRequest,int userId);
 	
-	@Autowired
-	public SchoolRepository schoolRepository;
-	
-	
-	public void insertByElement(School school)
-	{
-		schoolRepository.save(school);
-	}
-	
-	public void insertAll(List<School> schools)
-	{
-		schoolRepository.saveAll(schools);
-	}
 	
 	
 

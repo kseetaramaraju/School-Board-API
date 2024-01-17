@@ -3,18 +3,17 @@ package com.school.sba.exception;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Component
+@Setter
+@Getter
 @AllArgsConstructor
-@Data
+@Component
 @NoArgsConstructor
-public class UserNotFoundById extends RuntimeException{
-
+public class SchoolExistException extends RuntimeException {
+	
 	private String message;
-	
-	
-    
-	
+
 }

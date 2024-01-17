@@ -52,13 +52,8 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler{
 	}
 
 	
-	@ExceptionHandler(UserNotFoundById.class)
-	public ResponseEntity<Object> userNotFoundById(UserNotFoundById userNotFoundById)
-	{		
-		return helperStructureMethod(HttpStatus.NOT_FOUND,userNotFoundById.getMessage(),"User not found with given Id!") ;
-
-	}
-
+		
+	
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<Object> constraintViolationException(ConstraintViolationException constraintViolationException)
 	{		
@@ -80,6 +75,29 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler{
 		return helperStructureMethod(HttpStatus.BAD_REQUEST,adminAllReadyExistsException.getMessage(),"There Should Be Only One Admin He Is ALready Present!") ;
 
 	}
+
+	@ExceptionHandler(IsNotAdminException.class)
+	public ResponseEntity<Object> isNotAdminException(IsNotAdminException isNotAdminException)
+	{		
+		return helperStructureMethod(HttpStatus.BAD_REQUEST,isNotAdminException.getMessage(),"The User is Not Admin So he Cannot Create School!") ;
+
+	}
+
+	@ExceptionHandler(SchoolExistException.class)
+	public ResponseEntity<Object> schoolExistException(SchoolExistException schoolExistException)
+	{		
+		return helperStructureMethod(HttpStatus.BAD_REQUEST,schoolExistException.getMessage(),"School Is Already Present So Can Not Create Another One!") ;
+
+	}
+	
+	@ExceptionHandler(SchoolNotFoundException.class)
+	public ResponseEntity<Object> schoolNotFoundException(SchoolNotFoundException schoolNotFoundException)
+	{		
+		return helperStructureMethod(HttpStatus.NOT_FOUND,schoolNotFoundException.getMessage(),"School Not Found with given Id!") ;
+
+	}
+	
+	
 
 
 }
