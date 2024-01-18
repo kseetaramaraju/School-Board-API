@@ -13,4 +13,6 @@ public interface ScheduleService {
 
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(ScheduleRequest scheduleRequest,  int schoolId);
 
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> findSchedule(int schoolId);
+
 }
