@@ -1,5 +1,7 @@
 package com.school.sba.Service;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
 import com.school.sba.requestdto.AcademicProgramRequest;
@@ -10,5 +12,7 @@ public interface AcademicProgramService {
 
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveAcademicProgram(
 			AcademicProgramRequest academicProgramRequest, int schoolId);
+
+	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> FindAllAcademicProgram(int schoolId);
 
 }

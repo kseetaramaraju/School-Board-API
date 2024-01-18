@@ -2,6 +2,8 @@ package com.school.sba.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,9 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 	@Autowired
 	private ResponseStructure<AcademicProgramResponse> structure;
 
+	@Autowired
+	private ResponseStructure<List<AcademicProgramResponse>> liststructure;
+	
 
 	//mapping methods
 	private AcademicProgram mapToAcademicProgram(AcademicProgramRequest academicProgramRequest)
@@ -79,6 +84,42 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 
 
 		return new ResponseEntity<ResponseStructure<AcademicProgramResponse>>(structure,HttpStatus.CREATED);
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> FindAllAcademicProgram(int schoolId) {
+		
+		return schoolRepository.findById(schoolId).map( school ->{
+			
+			List<AcademicProgram> academicPrograms = school.getAcademicPrograms();
+			
+			List<AcademicProgramResponse> listOfAcademicResponse = academicPrograms.stream()
+			.map(this::mapToAcademicProgramResponse)
+			.collect(Collectors.toList());
+			
+			if(academicPrograms.isEmpty())
+			{
+				liststructure.setStatus(HttpStatus.NO_CONTENT.value());
+				liststructure.setMessage("No Academic Programs Not Found!!");
+				liststructure.setData(listOfAcademicResponse);
+				
+				return new ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>(liststructure,HttpStatus.NO_CONTENT);
+			}
+			else
+			{
+				liststructure.setStatus(HttpStatus.FOUND.value());
+				liststructure.setMessage("Academic Programs Found Successfully!!");
+				liststructure.setData(listOfAcademicResponse);
+				
+				return new ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>>(liststructure,HttpStatus.FOUND);
+			}
+			
+		})
+		
+		
+		.orElseThrow(()-> new SchoolNotFoundException("School Not Found!")  );
+		
+		
 	}
 
 }
