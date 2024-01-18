@@ -97,7 +97,13 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler{
 
 	}
 	
-	
+	@ExceptionHandler(ScheduleExistException.class)
+	public ResponseEntity<Object> scheduleExistException(ScheduleExistException scheduleExistException)
+	{		
+		return helperStructureMethod(HttpStatus.BAD_REQUEST,scheduleExistException.getMessage(),"Schedule Is Already Present In School Can not Create Another Schedule!!") ;
+
+	}
+
 
 
 }

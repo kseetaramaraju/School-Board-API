@@ -28,7 +28,7 @@ public class School {
 	private String emailId;
 	private String address;
 	
-	
-	
+	@OneToOne
+	private Schedule schedule;
 
 }

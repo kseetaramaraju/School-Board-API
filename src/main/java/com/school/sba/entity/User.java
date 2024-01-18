@@ -41,6 +41,7 @@ public class User {
 	
 	private UserRole userRole;
 	private boolean isDeleted;
+	
 	@ManyToOne
 	private School school;
 	
