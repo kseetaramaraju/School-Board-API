@@ -9,11 +9,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-//@Component
 @Data
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ScheduleRequest {
 	
 	private LocalTime opensAt;
