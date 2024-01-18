@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,6 +33,13 @@ public class ScheduleController {
 	{
 		
 		return scheduleService.findSchedule(schoolId);
+	}
+	
+	@PutMapping("/schedules/{scheduleId}")
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(@RequestBody ScheduleRequest scheduleRequest,@PathVariable int scheduleId )
+	{
+		
+		return scheduleService.updateSchedule(scheduleRequest,scheduleId);
 	}
 	
 	

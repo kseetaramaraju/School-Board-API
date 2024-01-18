@@ -13,6 +13,7 @@ import com.school.sba.Service.ScheduleService;
 import com.school.sba.entity.Schedule;
 import com.school.sba.entity.School;
 import com.school.sba.exception.ScheduleExistException;
+import com.school.sba.exception.ScheduleNotFoundException;
 import com.school.sba.exception.SchoolNotFoundException;
 import com.school.sba.requestdto.ScheduleRequest;
 import com.school.sba.responsedto.ScheduleResponse;
@@ -115,17 +116,39 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 	@Override
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> findSchedule(int schoolId) {
-		
+
 		School school = schoolRepository.findById(schoolId).orElseThrow( ()-> new SchoolNotFoundException("School Not Found!!"));
-		
+
 		Schedule schedule = school.getSchedule();
-		
+
 		responseStructure.setStatus(HttpStatus.FOUND.value());
 		responseStructure.setMessage("Schedule For School Is Found Sccessfully!!");
 		responseStructure.setData(mapToScheduleResponse(schedule));
-		
+
 		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.FOUND);
-		
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(ScheduleRequest scheduleRequest,int scheduleId) {
+
+		Schedule schedule =scheduleRepository.findById(scheduleId).orElseThrow( ()-> new ScheduleNotFoundException() );
+
+		schedule.setOpensAt(scheduleRequest.getOpensAt());
+		schedule.setClosesAt(scheduleRequest.getClosesAt());
+		schedule.setClassHoursPerDay(scheduleRequest.getClassHoursPerDay());
+		schedule.setClassHoursLengthInMin(convertToDuration(scheduleRequest.getClassHoursLengthInMin()));
+		schedule.setBreakTime(scheduleRequest.getBreakTime());
+		schedule.setBreakLengthInMin(convertToDuration(scheduleRequest.getBreakLengthInMin()));
+		schedule.setLunchTime(scheduleRequest.getLunchTime());
+		schedule.setLunchLengthInMin(convertToDuration(scheduleRequest.getLunchLengthInMin()));
+
+		responseStructure.setStatus(HttpStatus.OK.value());
+		responseStructure.setMessage("Schedule Updated For School Sccessfully!!");
+		responseStructure.setData(mapToScheduleResponse(schedule));
+
+		return new ResponseEntity<ResponseStructure<ScheduleResponse>>(responseStructure,HttpStatus.OK);
+
 	}
 
 
