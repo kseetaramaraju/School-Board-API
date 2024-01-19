@@ -121,5 +121,13 @@ public class UserServiceImpl implements UserService {
 		return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.FOUND);
 	}
 
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(int programId, int userId) {
+		
+		
+		
+		return null;
+	}
+
 
 }

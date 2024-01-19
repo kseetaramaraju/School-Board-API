@@ -36,4 +36,8 @@ public class AcademicProgram {
     
 	@ManyToMany(mappedBy = "academicPrograms")
     private List<User> users;
+	
+	@ManyToMany
+	private List<Subject> subjects;
+	
 }

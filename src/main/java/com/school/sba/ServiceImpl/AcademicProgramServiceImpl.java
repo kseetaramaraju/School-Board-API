@@ -48,7 +48,7 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 				.build();
 	}
 
-	private AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram)
+	public AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram)
 	{
 		return	AcademicProgramResponse.builder()
 				.programId(academicProgram.getProgramId())
@@ -56,6 +56,7 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 				.programType(academicProgram.getProgramType())
 				.beginsAt(academicProgram.getBeginsAt())
 				.endsAt(academicProgram.getEndsAt())
+				.subjects(academicProgram.getSubjects())
 				.build();
 	}
 
