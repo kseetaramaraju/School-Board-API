@@ -43,6 +43,7 @@ public class User {
 	
 	
 	private UserRole userRole;
+	
 	private boolean isDeleted;
 	
 	@ManyToOne
@@ -50,5 +51,8 @@ public class User {
 
 	@ManyToMany
 	private List<AcademicProgram> academicPrograms;
+	
+	@ManyToOne
+	private Subject subject;
 
 }

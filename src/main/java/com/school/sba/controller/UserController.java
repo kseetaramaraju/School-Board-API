@@ -41,10 +41,23 @@ public class UserController {
 		return userService.findUser(userId);
 	}
 	
+	@PutMapping("/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(@PathVariable  int userId,@RequestBody UserRequest userRequest){
+		return userService.updateUser(userId, userRequest);
+	}
+	
 	@PutMapping("/academic-programs/{programId}/users/{userId}")
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(@PathVariable int programId ,@PathVariable int userId )
 	{
 		return userService.addUserToAcademicProgram(programId,userId);
 	}
+	
+	@PutMapping("/subjects/{subjectId}/users/{userId}")
+	public ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTeacher(@PathVariable int subjectId,@PathVariable int userId )
+	{
+		return userService.addSubjectToTeacher(subjectId,userId);
+	}
+	
+	
 
 }

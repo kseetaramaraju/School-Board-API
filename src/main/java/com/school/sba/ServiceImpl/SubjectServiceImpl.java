@@ -17,6 +17,7 @@ import com.school.sba.entity.Subject;
 import com.school.sba.exception.AcademicProgramNotFoundException;
 import com.school.sba.requestdto.SubjectRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
+import com.school.sba.responsedto.SubjectResponse;
 import com.school.sba.utility.ResponseStructure;
 
 @Service
@@ -33,6 +34,23 @@ public class SubjectServiceImpl implements SubjectService{
 
 	@Autowired
 	private AcademicProgramServiceImpl academicProgramServiceImpl;
+	
+	@Autowired
+	private ResponseStructure<List<SubjectResponse>> listOfSubjectsStructure;
+	
+	
+	private List<SubjectResponse> mapTOListOfSubjectResponse(List<Subject> listOfSubjects) {
+		List<SubjectResponse> listOfSubjectResponse = new ArrayList<>();
+
+		listOfSubjects.forEach(subject -> {
+			SubjectResponse sr = new SubjectResponse();
+			sr.setSubjectId(subject.getSubjectId());
+			sr.setSubjectNames(subject.getSubjectName());
+			listOfSubjectResponse.add(sr);
+		});
+
+		return listOfSubjectResponse;
+	}
 
 	@Override
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveSubject(SubjectRequest subjectRequest, int programId) {
@@ -124,5 +142,30 @@ public class SubjectServiceImpl implements SubjectService{
 				.orElseThrow( ()-> new AcademicProgramNotFoundException("Academic Program Not Found!") );
 
 	}
+	
+	@Override
+	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects() {
+		
+		
+		List<Subject> listOfSubjects = subjectRepository.findAll();
+
+		if(listOfSubjects.isEmpty()) {
+			listOfSubjectsStructure.setStatus(HttpStatus.NOT_FOUND.value());
+			listOfSubjectsStructure.setMessage("No subjects found");
+			listOfSubjectsStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
+
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listOfSubjectsStructure, HttpStatus.NOT_FOUND);
+		}
+		else {
+			listOfSubjectsStructure.setStatus(HttpStatus.FOUND.value());
+			listOfSubjectsStructure.setMessage("list of subjects found");
+			listOfSubjectsStructure.setData(mapTOListOfSubjectResponse(listOfSubjects));
+
+			return new ResponseEntity<ResponseStructure<List<SubjectResponse>>>(listOfSubjectsStructure, HttpStatus.FOUND);
+		}
+
+	}
+
+	
 
 }

@@ -18,4 +18,8 @@ public interface UserService {
 
 	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(int programId, int userId);
 
+	public ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTeacher(int subjectId, int userId);
+
+	public ResponseEntity<ResponseStructure<UserResponse>> updateUser(int userId, UserRequest userRequest);
+
 }
