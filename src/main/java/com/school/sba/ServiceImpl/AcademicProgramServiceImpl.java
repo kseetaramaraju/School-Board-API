@@ -12,10 +12,16 @@ import org.springframework.stereotype.Service;
 
 import com.school.sba.Repository.AcademicProgramRepository;
 import com.school.sba.Repository.SchoolRepository;
+import com.school.sba.Repository.UserRepository;
 import com.school.sba.Service.AcademicProgramService;
 import com.school.sba.entity.AcademicProgram;
 import com.school.sba.entity.School;
+import com.school.sba.entity.User;
+import com.school.sba.enums.UserRole;
+import com.school.sba.exception.AcademicProgramNotFoundException;
+import com.school.sba.exception.AdminCanNotBeAssignedToAcademicProgram;
 import com.school.sba.exception.SchoolNotFoundException;
+import com.school.sba.exception.UserNotFoundById;
 import com.school.sba.requestdto.AcademicProgramRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
 import com.school.sba.utility.ResponseStructure;
@@ -35,6 +41,9 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 
 	@Autowired
 	private ResponseStructure<List<AcademicProgramResponse>> liststructure;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 
 	//mapping methods
@@ -57,6 +66,8 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 				.beginsAt(academicProgram.getBeginsAt())
 				.endsAt(academicProgram.getEndsAt())
 				.subjects(academicProgram.getSubjects())
+				.users(academicProgram.getUsers())
+				.school(academicProgram.getSchool())
 				.build();
 	}
 
@@ -123,4 +134,5 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 		
 	}
 
+	
 }

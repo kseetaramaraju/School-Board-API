@@ -1,8 +1,11 @@
 package com.school.sba.ServiceImpl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.school.sba.Repository.SchoolRepository;
@@ -64,22 +67,28 @@ public class SchoolServiceImpl implements SchoolService{
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(SchoolRequest schoolRequest,int userId) {
+	public ResponseEntity<ResponseStructure<SchoolResponse>> saveSchool(SchoolRequest schoolRequest) {
+		String name=SecurityContextHolder.getContext().getAuthentication().getName();
 
-		return userRepository.findById(userId).map(user ->{
-			
+		return userRepository.findByUserName(name).map(user ->{
+
 			if(user.getUserRole().equals(UserRole.ADMIN))
 			{
 				if(user.getSchool()==null)
 				{
 					School school = schoolRepository.save(mapToSchool(schoolRequest));
-					user.setSchool(school);
+
+					userRepository.findAll().forEach( u ->{
+						u.setSchool(school);
+						schoolRepository.save(school);
+					});
+					
 					userRepository.save(user);
 					
 					responseStructure.setStatus(HttpStatus.CREATED.value());
 					responseStructure.setMessage("School is created!!");
 					responseStructure.setData(mapToSchoolResponse(school));
-					
+
 					return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.CREATED);
 				}
 				else
@@ -91,9 +100,75 @@ public class SchoolServiceImpl implements SchoolService{
 			{
 				throw new IsNotAdminException("The UserRole is Not Admin!!");	
 			}
-			
+
 		}) .orElseThrow( ()->  new UserNotFoundById("User Not Found"));
 
 	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<SchoolResponse>> updateSchool(SchoolRequest schoolRequest, int schoolId) {
+
+		return schoolRepository.findById(schoolId).map(school ->{
+
+			school=mapToSchool(schoolRequest);
+			school.setSchoolId(schoolId);
+
+			school=schoolRepository.save(school);
+
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("School Updated Sccessfully!!");
+			responseStructure.setData(mapToSchoolResponse(school));
+
+			return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure,HttpStatus.OK);
+
+		})
+
+				.orElseThrow( ()-> new SchoolNotFoundException("School Not Found!!"));
+
+
+	}
+
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<SchoolResponse>> findSchool(int schoolId) {
+
+		return  schoolRepository.findById(schoolId).map(school ->{
+
+
+			responseStructure.setStatus(HttpStatus.FOUND.value());
+			responseStructure.setMessage("School data found in database");
+			responseStructure.setData(mapToSchoolResponse(school));
+
+			return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure, HttpStatus.FOUND);
+
+		})
+				.orElseThrow(() -> new SchoolNotFoundException("School not present in DB"));
+
+	}
+
+	@Override
+	public ResponseEntity<ResponseStructure<SchoolResponse>> deleteSchool(int schoolId) {
+
+		return  schoolRepository.findById(schoolId).map(school ->{
+
+			schoolRepository.deleteById(school.getSchoolId());
+     
+			responseStructure.setStatus(HttpStatus.OK.value());
+			responseStructure.setMessage("School Deleted in database");
+			responseStructure.setData(mapToSchoolResponse(school));
+
+			return new ResponseEntity<ResponseStructure<SchoolResponse>>(responseStructure, HttpStatus.OK);
+
+		})
+				.orElseThrow(() -> new SchoolNotFoundException("School not present in DB"));
+	}
+
+
+
+
+
+
+
 
 }

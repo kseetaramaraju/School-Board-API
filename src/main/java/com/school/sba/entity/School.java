@@ -36,5 +36,7 @@ public class School {
 	
 	@OneToMany(mappedBy = "school")
 	private List<AcademicProgram> academicPrograms; 
+	
+	
 
 }

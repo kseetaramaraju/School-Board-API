@@ -1,10 +1,13 @@
 package com.school.sba.ServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +15,13 @@ import com.school.sba.Repository.AcademicProgramRepository;
 import com.school.sba.Repository.SubjectRepository;
 import com.school.sba.Repository.UserRepository;
 import com.school.sba.Service.UserService;
+import com.school.sba.entity.School;
 import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
 import com.school.sba.exception.AcademicProgramNotFoundException;
 import com.school.sba.exception.AdminAllReadyExistsException;
 import com.school.sba.exception.AdminCanNotBeAssignedToAcademicProgram;
+import com.school.sba.exception.IsNotAdminException;
 import com.school.sba.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sba.exception.SubjectNotFoundByIdException;
 import com.school.sba.exception.UserNotFoundById;
@@ -31,7 +36,20 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private PasswordEncoder encoder;
-	
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private ResponseStructure<UserResponse> structure;
+
+	@Autowired
+	private AcademicProgramRepository academicProgramRepository;
+
+	@Autowired
+	private SubjectRepository subjectRepository;
+
+
 	//mapper methods
 	private User mapToUser(UserRequest userRequest)
 	{
@@ -48,6 +66,14 @@ public class UserServiceImpl implements UserService {
 
 	private UserResponse mapToUserResponse(User user)
 	{
+		List<String> listOfProgramName = new ArrayList();
+
+		if( user.getAcademicPrograms() != null) {
+			user.getAcademicPrograms().forEach(academicProgram -> {
+				listOfProgramName.add(academicProgram.getProgramName());
+			});
+		}
+
 		return UserResponse.builder()
 				.userId(user.getUserId())
 				.userName(user.getUserName())
@@ -57,56 +83,90 @@ public class UserServiceImpl implements UserService {
 				.email(user.getEmail())
 				.userRole(user.getUserRole())
 				.isDeleted(user.isDeleted())
+				.listOfAcademicPrograms(listOfProgramName)
+				.subject(user.getSubject())
 				.build();
 	}
 
 
 
 
-	@Autowired
-	private UserRepository userRepository;
 
-	@Autowired
-	private ResponseStructure<UserResponse> structure;
-
-	@Autowired
-	private AcademicProgramRepository academicProgramRepository;
-
-	@Autowired
-	private SubjectRepository subjectRepository;
 
 	@Override
-	public ResponseEntity<ResponseStructure<UserResponse>> saveUserRegister(UserRequest userRequest) {
-
+	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@Valid UserRequest userRequest) {
 
 		if( userRequest.getUserRole().equals(UserRole.ADMIN) )
 		{
-			if( userRepository.existsByUserRole(userRequest.getUserRole())==false)
+			if( userRepository.existsByIsDeletedAndUserRole(false,userRequest.getUserRole()))
 			{
-				User user = mapToUser(userRequest);
-				user.isDeleted();
-				user = userRepository.save(user);
-				structure.setStatus(HttpStatus.CREATED.value());
-				structure.setMessage("User Registration Done Successfully!1");
-				structure.setData(mapToUserResponse(user));
-
-				return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.CREATED);
+				throw new AdminAllReadyExistsException("Admin Already Exists!!");
 			}
 			else
 			{
-				throw new AdminAllReadyExistsException("Admin is Already Exist!!");
+				if(userRepository.existsByIsDeletedAndUserRole(true, userRequest.getUserRole())) {
+					User user = mapToUser(userRequest);
+					user.isDeleted();
+					user=userRepository.save(user);
+
+					structure.setStatus(HttpStatus.CREATED.value());
+					structure.setMessage("Admin Registered successfully");
+					structure.setData(mapToUserResponse(user));
+
+					return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);
+				}
+				else {
+					User user = mapToUser(userRequest);
+					user.isDeleted();
+					user=userRepository.save(user);
+
+					structure.setStatus(HttpStatus.CREATED.value());
+					structure.setMessage("user saved successfully");
+					structure.setData(mapToUserResponse(user));
+
+					return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);	
+				}
 			}
 		}
 		else
 		{
-			User user = userRepository.save(mapToUser(userRequest));
-			structure.setStatus(HttpStatus.CREATED.value());
-			structure.setMessage("User Registration Done Successfully!1");
-			structure.setData(mapToUserResponse(user));
-
-			return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.CREATED);
+			throw new IsNotAdminException("User is Not Admin!!");
 		}
 
+	}
+
+
+	@Override
+	public ResponseEntity<ResponseStructure<UserResponse>> saveUser(UserRequest userRequest) {
+
+		String name=SecurityContextHolder.getContext().getAuthentication().getName();
+
+		if( userRequest.getUserRole().equals(UserRole.ADMIN))
+		{
+			throw new AdminAllReadyExistsException("Admin is Already Exist!!");
+			
+		}
+		else
+		{
+			
+		return userRepository.findByUserName(name).map(admin ->{
+				
+				School school=admin.getSchool();
+				
+				User user=mapToUser(userRequest);
+				user.setSchool(school);
+				
+				user = userRepository.save(user);
+				
+				structure.setStatus(HttpStatus.CREATED.value());
+				structure.setMessage(user.getUserRole()+" Registration Done Successfully!!");
+				structure.setData(mapToUserResponse(user));
+
+				return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.CREATED);
+
+				
+			}).orElseThrow( ()-> new UserNotFoundById("Admin Not Found !!")   );
+		}
 	}
 
 
@@ -228,5 +288,6 @@ public class UserServiceImpl implements UserService {
 
 
 	}
+
 
 }

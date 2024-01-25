@@ -83,16 +83,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 	@Override
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(ScheduleRequest scheduleRequest, int schoolId){
 
-		System.out.println(scheduleRequest);
 
 		return schoolRepository.findById(schoolId).map( school ->
 		{
 			if(school.getSchedule()==null)
 			{
-				System.out.println(scheduleRequest.getOpensAt());
 				Schedule schedule = scheduleRepository.save(mapToSchedule(scheduleRequest));
 
-				System.out.println(schedule);
 
 				school.setSchedule(schedule);
 				schoolRepository.save(school);
@@ -107,9 +104,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 			{
 				throw new ScheduleExistException("Schedule Already Present!!");
 			}
-		}
-
-				)			
+			
+		})			
 				.orElseThrow( ()-> new SchoolNotFoundException("School Not Found")   );
 
 	}
@@ -134,14 +130,21 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		Schedule schedule =scheduleRepository.findById(scheduleId).orElseThrow( ()-> new ScheduleNotFoundException() );
 
-		schedule.setOpensAt(scheduleRequest.getOpensAt());
-		schedule.setClosesAt(scheduleRequest.getClosesAt());
-		schedule.setClassHoursPerDay(scheduleRequest.getClassHoursPerDay());
-		schedule.setClassHoursLengthInMin(convertToDuration(scheduleRequest.getClassHoursLengthInMin()));
-		schedule.setBreakTime(scheduleRequest.getBreakTime());
-		schedule.setBreakLengthInMin(convertToDuration(scheduleRequest.getBreakLengthInMin()));
-		schedule.setLunchTime(scheduleRequest.getLunchTime());
-		schedule.setLunchLengthInMin(convertToDuration(scheduleRequest.getLunchLengthInMin()));
+		schedule = mapToSchedule(scheduleRequest);
+		schedule.setScheduleId(scheduleId);
+		
+		schedule=scheduleRepository.save(schedule);
+		
+		
+		
+//		schedule.setOpensAt(scheduleRequest.getOpensAt());
+//		schedule.setClosesAt(scheduleRequest.getClosesAt());
+//		schedule.setClassHoursPerDay(scheduleRequest.getClassHoursPerDay());
+//		schedule.setClassHoursLengthInMin(convertToDuration(scheduleRequest.getClassHoursLengthInMin()));
+//		schedule.setBreakTime(scheduleRequest.getBreakTime());
+//		schedule.setBreakLengthInMin(convertToDuration(scheduleRequest.getBreakLengthInMin()));
+//		schedule.setLunchTime(scheduleRequest.getLunchTime());
+//		schedule.setLunchLengthInMin(convertToDuration(scheduleRequest.getLunchLengthInMin()));
 
 		responseStructure.setStatus(HttpStatus.OK.value());
 		responseStructure.setMessage("Schedule Updated For School Sccessfully!!");

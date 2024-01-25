@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<User,Integer>{
 	
 	public boolean existsByUserRole(UserRole userRole);
 	
+	public boolean existsByIsDeletedAndUserRole(boolean b,UserRole userRole);
+	
 
 	public Optional<User> findByUserName(String username);
 

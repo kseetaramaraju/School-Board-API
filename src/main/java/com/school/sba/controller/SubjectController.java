@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ public class SubjectController {
 	private SubjectService subjectService; 
 
 	@PostMapping("/academic-programs/{programId}/subjects")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveSubject(@RequestBody SubjectRequest SubjectRequest, @PathVariable int programId )
 	{
 		
@@ -32,6 +34,7 @@ public class SubjectController {
 	}
 	
 	@PutMapping("/academic-programs/{programId}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@RequestBody SubjectRequest SubjectRequest, @PathVariable int programId )
 	{
 		

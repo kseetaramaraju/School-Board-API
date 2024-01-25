@@ -2,6 +2,7 @@ package com.school.sba.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ public class ScheduleController {
 	private ScheduleService scheduleService;
 	
 	@PostMapping("/schools/{schoolId}/schedules")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> saveSchedule(@RequestBody ScheduleRequest scheduleRequest,@PathVariable int schoolId )
 	{
 		
@@ -36,6 +38,7 @@ public class ScheduleController {
 	}
 	
 	@PutMapping("/schedules/{scheduleId}")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public ResponseEntity<ResponseStructure<ScheduleResponse>> updateSchedule(@RequestBody ScheduleRequest scheduleRequest,@PathVariable int scheduleId )
 	{
 		

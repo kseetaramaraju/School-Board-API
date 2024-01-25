@@ -2,6 +2,7 @@ package com.school.sba.requestdto;
 
 import org.springframework.stereotype.Component;
 
+import com.school.sba.entity.School;
 import com.school.sba.enums.UserRole;
 
 import io.swagger.v3.oas.annotations.media.Schema;

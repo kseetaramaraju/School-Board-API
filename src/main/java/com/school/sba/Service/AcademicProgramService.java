@@ -15,4 +15,5 @@ public interface AcademicProgramService {
 
 	public ResponseEntity<ResponseStructure<List<AcademicProgramResponse>>> FindAllAcademicProgram(int schoolId);
 
+
 }

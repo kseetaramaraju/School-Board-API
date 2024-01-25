@@ -41,15 +41,14 @@ public class User {
 	@Column(unique = true)
 	private String email;
 	
+	private boolean isDeleted;
 	
 	private UserRole userRole;
-	
-	private boolean isDeleted;
 	
 	@ManyToOne
 	private School school;
 
-	@ManyToMany
+	@ManyToMany(mappedBy = "users")
 	private List<AcademicProgram> academicPrograms;
 	
 	@ManyToOne
