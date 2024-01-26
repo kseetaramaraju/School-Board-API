@@ -17,7 +17,7 @@ public interface UserService {
 
 	public ResponseEntity<ResponseStructure<UserResponse>> findUser(@Valid int userId);
 
-	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(int programId, int userId);
+	public ResponseEntity<ResponseStructure<UserResponse>> assignTeacherToAcademicProgram(int programId, int userId);
 
 	public ResponseEntity<ResponseStructure<UserResponse>> addSubjectToTeacher(int subjectId, int userId);
 

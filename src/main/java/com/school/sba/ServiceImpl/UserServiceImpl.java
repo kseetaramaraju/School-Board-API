@@ -24,6 +24,7 @@ import com.school.sba.exception.AdminCanNotBeAssignedToAcademicProgram;
 import com.school.sba.exception.IsNotAdminException;
 import com.school.sba.exception.OnlyTeacherCanBeAssignedToSubjectException;
 import com.school.sba.exception.SubjectNotFoundByIdException;
+import com.school.sba.exception.SubjectsWillNotAssignToStudent;
 import com.school.sba.exception.UserNotFoundById;
 import com.school.sba.requestdto.UserRequest;
 import com.school.sba.responsedto.UserResponse;
@@ -218,7 +219,7 @@ public class UserServiceImpl implements UserService {
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(int programId, int userId) {
+	public ResponseEntity<ResponseStructure<UserResponse>> assignTeacherToAcademicProgram(int programId, int userId) {
 
 		return userRepository.findById(userId).map(user ->{
 
@@ -230,18 +231,36 @@ public class UserServiceImpl implements UserService {
 			{
 				return academicProgramRepository.findById(programId).map(program ->{
 
-					program.getUsers().add(user);
-					user.getAcademicPrograms().add(program);
+					
+					if(program.getSubjects().contains(user.getSubject()))
+					{
+						if(user.getUserRole().equals(UserRole.TEACHER))
+						{
+							user.getAcademicPrograms().add(program);
+							program.getUsers().add(user);
+							
+							academicProgramRepository.save(program);
+							userRepository.save(user);
 
-					academicProgramRepository.save(program);
-					userRepository.save(user);
+							structure.setStatus(HttpStatus.OK.value());
+							structure.setMessage("user is Assigned To Academic Program Successfully!!");
+							structure.setData(mapToUserResponse(user));
 
-					structure.setStatus(HttpStatus.OK.value());
-					structure.setMessage("user is Assigned To Academic Program Successfully!!");
-					structure.setData(mapToUserResponse(user));
+							return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.OK);
 
-					return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.OK);
-
+							
+							
+						}
+						else
+						{
+							throw new SubjectsWillNotAssignToStudent("Subjects Will Not Assign To Student!!");
+						}
+					}
+					else
+					{
+						throw new SubjectNotFoundByIdException("Subject In Academic Program and Subject In User is Not Matching!!");
+					}
+					
 				})
 
 						.orElseThrow(()-> new AcademicProgramNotFoundException("Academic Not Found Exception"));

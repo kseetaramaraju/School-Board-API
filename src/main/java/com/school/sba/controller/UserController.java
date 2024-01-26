@@ -59,9 +59,9 @@ public class UserController {
 	
 	@PutMapping("/academic-programs/{programId}/users/{userId}")
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<ResponseStructure<UserResponse>> addUserToAcademicProgram(@PathVariable int programId ,@PathVariable int userId )
+	public ResponseEntity<ResponseStructure<UserResponse>> assignTeacherToAcademicProgram(@PathVariable int programId ,@PathVariable int userId )
 	{
-		return userService.addUserToAcademicProgram(programId,userId);
+		return userService.assignTeacherToAcademicProgram(programId,userId);
 	}
 	
 	@PutMapping("/subjects/{subjectId}/users/{userId}")
