@@ -13,7 +13,6 @@ public interface SubjectService {
 
 	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> saveSubject(SubjectRequest subjectRequest, int programId);
 
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(SubjectRequest subjectRequest,int programId);
 
 	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects();
 	

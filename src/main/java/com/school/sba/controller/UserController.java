@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.school.sba.Service.UserService;
 import com.school.sba.enums.UserRole;
 import com.school.sba.requestdto.UserRequest;
+import com.school.sba.responsedto.AdminResponse;
 import com.school.sba.responsedto.UserResponse;
 import com.school.sba.utility.ResponseStructure;
 
@@ -26,7 +27,7 @@ public class UserController {
 	private UserService userService;
 	
 	@PostMapping("/users/register") 
-	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@RequestBody @Valid UserRequest userRequest)
+	public ResponseEntity<ResponseStructure<AdminResponse>> registerAdmin(@RequestBody @Valid UserRequest userRequest)
 	{
 		return userService.registerAdmin(userRequest);
 	}
@@ -59,9 +60,9 @@ public class UserController {
 	
 	@PutMapping("/academic-programs/{programId}/users/{userId}")
 	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<ResponseStructure<UserResponse>> assignTeacherToAcademicProgram(@PathVariable int programId ,@PathVariable int userId )
+	public ResponseEntity<ResponseStructure<UserResponse>> assignUserToAcademicProgram(@PathVariable int programId ,@PathVariable int userId )
 	{
-		return userService.assignTeacherToAcademicProgram(programId,userId);
+		return userService.assignUserToAcademicProgram(programId,userId);
 	}
 	
 	@PutMapping("/subjects/{subjectId}/users/{userId}")

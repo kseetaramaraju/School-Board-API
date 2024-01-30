@@ -8,7 +8,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,15 +32,7 @@ public class SubjectController {
 		
 	}
 	
-	@PutMapping("/academic-programs/{programId}")
-	@PreAuthorize("hasAuthority('ADMIN')")
-	public ResponseEntity<ResponseStructure<AcademicProgramResponse>> updateSubject(@RequestBody SubjectRequest SubjectRequest, @PathVariable int programId )
-	{
-		
-		return subjectService.updateSubject(SubjectRequest,programId); 
-		
-	}
-
+	
 	@GetMapping("/subjects")
 	public ResponseEntity<ResponseStructure<List<SubjectResponse>>> findAllSubjects(){
 		return subjectService.findAllSubjects();

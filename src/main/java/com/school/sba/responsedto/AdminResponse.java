@@ -7,20 +7,19 @@ import org.springframework.stereotype.Component;
 import com.school.sba.entity.School;
 import com.school.sba.entity.Subject;
 import com.school.sba.enums.UserRole;
-import com.school.sba.requestdto.UserRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 @Builder
-public class UserResponse {
-
+public class AdminResponse {
+	
 	private int userId;
 	private String userName;
 	private String firstName;
@@ -29,10 +28,6 @@ public class UserResponse {
 	private String email;
 	private UserRole userRole;
 	private Boolean isDeleted;
-
-	private List<String> listOfAcademicPrograms;
-
-	private Subject subject;
-
+    private School school;
 
 }

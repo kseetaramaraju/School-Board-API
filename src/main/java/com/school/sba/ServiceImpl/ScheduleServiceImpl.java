@@ -104,7 +104,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 			{
 				throw new ScheduleExistException("Schedule Already Present!!");
 			}
-			
+
 		})			
 				.orElseThrow( ()-> new SchoolNotFoundException("School Not Found")   );
 
@@ -132,19 +132,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 		schedule = mapToSchedule(scheduleRequest);
 		schedule.setScheduleId(scheduleId);
-		
+
 		schedule=scheduleRepository.save(schedule);
-		
-		
-		
-//		schedule.setOpensAt(scheduleRequest.getOpensAt());
-//		schedule.setClosesAt(scheduleRequest.getClosesAt());
-//		schedule.setClassHoursPerDay(scheduleRequest.getClassHoursPerDay());
-//		schedule.setClassHoursLengthInMin(convertToDuration(scheduleRequest.getClassHoursLengthInMin()));
-//		schedule.setBreakTime(scheduleRequest.getBreakTime());
-//		schedule.setBreakLengthInMin(convertToDuration(scheduleRequest.getBreakLengthInMin()));
-//		schedule.setLunchTime(scheduleRequest.getLunchTime());
-//		schedule.setLunchLengthInMin(convertToDuration(scheduleRequest.getLunchLengthInMin()));
 
 		responseStructure.setStatus(HttpStatus.OK.value());
 		responseStructure.setMessage("Schedule Updated For School Sccessfully!!");

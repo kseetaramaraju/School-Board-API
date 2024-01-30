@@ -16,6 +16,7 @@ import com.school.sba.Repository.UserRepository;
 import com.school.sba.Service.AcademicProgramService;
 import com.school.sba.entity.AcademicProgram;
 import com.school.sba.entity.School;
+import com.school.sba.entity.Subject;
 import com.school.sba.entity.User;
 import com.school.sba.enums.UserRole;
 import com.school.sba.exception.AcademicProgramNotFoundException;
@@ -24,6 +25,7 @@ import com.school.sba.exception.SchoolNotFoundException;
 import com.school.sba.exception.UserNotFoundById;
 import com.school.sba.requestdto.AcademicProgramRequest;
 import com.school.sba.responsedto.AcademicProgramResponse;
+import com.school.sba.responsedto.SubjectResponse;
 import com.school.sba.utility.ResponseStructure;
 
 @Service
@@ -35,6 +37,10 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 
 	@Autowired
 	private AcademicProgramRepository academicProgramRepository;
+	
+	@Autowired
+	private UserServiceImpl userServiceImpl;
+	
 
 	@Autowired
 	private ResponseStructure<AcademicProgramResponse> structure;
@@ -42,10 +48,7 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 	@Autowired
 	private ResponseStructure<List<AcademicProgramResponse>> liststructure;
 	
-	@Autowired
-	private UserRepository userRepository;
 	
-
 	//mapping methods
 	private AcademicProgram mapToAcademicProgram(AcademicProgramRequest academicProgramRequest)
 	{
@@ -59,15 +62,24 @@ public class AcademicProgramServiceImpl implements AcademicProgramService{
 
 	public AcademicProgramResponse mapToAcademicProgramResponse(AcademicProgram academicProgram)
 	{
+		List<String> subjects=new ArrayList<String>();
+		
+		List<Subject> listOfSubjects =academicProgram.getSubjects();
+		
+		if(listOfSubjects!=null)
+		{
+			listOfSubjects.forEach(subject ->{
+				subjects.add(subject.getSubjectName());
+			});
+		}
+		
 		return	AcademicProgramResponse.builder()
 				.programId(academicProgram.getProgramId())
 				.programName(academicProgram.getProgramName())
 				.programType(academicProgram.getProgramType())
 				.beginsAt(academicProgram.getBeginsAt())
 				.endsAt(academicProgram.getEndsAt())
-				.subjects(academicProgram.getSubjects())
-				.users(academicProgram.getUsers())
-				.school(academicProgram.getSchool())
+				.subjects(subjects)
 				.build();
 	}
 

@@ -27,7 +27,9 @@ import com.school.sba.exception.SubjectNotFoundByIdException;
 import com.school.sba.exception.SubjectsWillNotAssignToStudent;
 import com.school.sba.exception.UserNotFoundById;
 import com.school.sba.requestdto.UserRequest;
+import com.school.sba.responsedto.AdminResponse;
 import com.school.sba.responsedto.UserResponse;
+import com.school.sba.utility.ResponseEntityProxy;
 import com.school.sba.utility.ResponseStructure;
 
 import jakarta.validation.Valid;
@@ -52,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
 
 	//mapper methods
-	private User mapToUser(UserRequest userRequest)
+	public User mapToUser(UserRequest userRequest)
 	{
 		return User.builder()
 				.userName(userRequest.getUserName())
@@ -65,7 +67,7 @@ public class UserServiceImpl implements UserService {
 				.build();
 	}
 
-	private UserResponse mapToUserResponse(User user)
+	public UserResponse mapToUserResponse(User user)
 	{
 		List<String> listOfProgramName = new ArrayList();
 
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
 				listOfProgramName.add(academicProgram.getProgramName());
 			});
 		}
-
+		
 		return UserResponse.builder()
 				.userId(user.getUserId())
 				.userName(user.getUserName())
@@ -89,14 +91,44 @@ public class UserServiceImpl implements UserService {
 				.build();
 	}
 
+	public AdminResponse mapToAdminResponse(User user)
+	{
+		
+		return AdminResponse.builder()
+				.userId(user.getUserId())
+				.userName(user.getUserName())
+				.firstName(user.getFirstName())
+				.lastName(user.getLastName())
+				.contactNo(user.getContactNo())
+				.email(user.getEmail())
+				.userRole(user.getUserRole())
+				.isDeleted(user.isDeleted())
+				.school(user.getSchool())
+				.build();
+	}
 
-
+  //For Converting List Of UserResponse
+	
+	public List<UserResponse> mapToListOfUserResponse(List<User> users )
+	{
+		List<UserResponse> listOfUserResponses=new ArrayList<>();
+		
+		users.forEach( user -> {
+			UserResponse userresponse=mapToUserResponse(user);
+			listOfUserResponses.add(userresponse);
+		});
+		
+		return listOfUserResponses;
+	}
+	
 
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<UserResponse>> registerAdmin(@Valid UserRequest userRequest) {
+	public ResponseEntity<ResponseStructure<AdminResponse>> registerAdmin( UserRequest userRequest) {
 
+	  ResponseStructure<AdminResponse> structure=new ResponseStructure<>();		
+		
 		if( userRequest.getUserRole().equals(UserRole.ADMIN) )
 		{
 			if( userRepository.existsByIsDeletedAndUserRole(false,userRequest.getUserRole()))
@@ -107,14 +139,13 @@ public class UserServiceImpl implements UserService {
 			{
 				if(userRepository.existsByIsDeletedAndUserRole(true, userRequest.getUserRole())) {
 					User user = mapToUser(userRequest);
-					user.isDeleted();
 					user=userRepository.save(user);
 
 					structure.setStatus(HttpStatus.CREATED.value());
 					structure.setMessage("Admin Registered successfully");
-					structure.setData(mapToUserResponse(user));
+					structure.setData(mapToAdminResponse(user));
 
-					return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);
+					return new ResponseEntity<ResponseStructure<AdminResponse>>(structure, HttpStatus.CREATED);
 				}
 				else {
 					User user = mapToUser(userRequest);
@@ -122,16 +153,16 @@ public class UserServiceImpl implements UserService {
 					user=userRepository.save(user);
 
 					structure.setStatus(HttpStatus.CREATED.value());
-					structure.setMessage("user saved successfully");
-					structure.setData(mapToUserResponse(user));
+					structure.setMessage("Admin Registered successfully");
+					structure.setData(mapToAdminResponse(user));
 
-					return new ResponseEntity<ResponseStructure<UserResponse>>(structure, HttpStatus.CREATED);	
+					return new ResponseEntity<ResponseStructure<AdminResponse>>(structure, HttpStatus.CREATED);	
 				}
 			}
 		}
 		else
 		{
-			throw new IsNotAdminException("User is Not Admin!!");
+			throw new IsNotAdminException("User is Not Admin & Only Admin Can Register First!!");
 		}
 
 	}
@@ -160,7 +191,7 @@ public class UserServiceImpl implements UserService {
 				user = userRepository.save(user);
 				
 				structure.setStatus(HttpStatus.CREATED.value());
-				structure.setMessage(user.getUserRole()+" Registration Done Successfully!!");
+				structure.setMessage(user.getUserRole()+" "+user.getUserName()+"  Registration Done Successfully!!");
 				structure.setData(mapToUserResponse(user));
 
 				return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.CREATED);
@@ -219,7 +250,7 @@ public class UserServiceImpl implements UserService {
 
 
 	@Override
-	public ResponseEntity<ResponseStructure<UserResponse>> assignTeacherToAcademicProgram(int programId, int userId) {
+	public ResponseEntity<ResponseStructure<UserResponse>> assignUserToAcademicProgram(int programId, int userId) {
 
 		return userRepository.findById(userId).map(user ->{
 
@@ -232,9 +263,9 @@ public class UserServiceImpl implements UserService {
 				return academicProgramRepository.findById(programId).map(program ->{
 
 					
-					if(program.getSubjects().contains(user.getSubject()))
+					if(user.getUserRole().equals(UserRole.TEACHER))
 					{
-						if(user.getUserRole().equals(UserRole.TEACHER))
+						if(program.getSubjects().contains(user.getSubject()))
 						{
 							user.getAcademicPrograms().add(program);
 							program.getUsers().add(user);
@@ -242,23 +273,27 @@ public class UserServiceImpl implements UserService {
 							academicProgramRepository.save(program);
 							userRepository.save(user);
 
-							structure.setStatus(HttpStatus.OK.value());
-							structure.setMessage("user is Assigned To Academic Program Successfully!!");
-							structure.setData(mapToUserResponse(user));
-
-							return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.OK);
-
-							
+							return ResponseEntityProxy.setResponseStructure(HttpStatus.OK,
+									user.getUserRole().name().toLowerCase() + " assigned to academic program successfully",
+									mapToUserResponse(user));
 							
 						}
 						else
 						{
-							throw new SubjectsWillNotAssignToStudent("Subjects Will Not Assign To Student!!");
+							throw new SubjectNotFoundByIdException("Subjects Present In Academic Program Not Matching Subject Present In User!!");
 						}
 					}
 					else
 					{
-						throw new SubjectNotFoundByIdException("Subject In Academic Program and Subject In User is Not Matching!!");
+						program.getUsers().add(user);		
+						user.getAcademicPrograms().add(program);
+
+						userRepository.save(user);
+						academicProgramRepository.save(program);
+
+						return ResponseEntityProxy.setResponseStructure(HttpStatus.OK,
+								user.getUserRole().name().toLowerCase() + " assigned to academic program successfully",
+								mapToUserResponse(user));	
 					}
 					
 				})
@@ -284,12 +319,9 @@ public class UserServiceImpl implements UserService {
 							user.setSubject(subject);
 							userRepository.save(user);
 
-							structure.setStatus(HttpStatus.OK.value());
-							structure.setMessage("subject assigned to teacher successfully");
-							structure.setData(mapToUserResponse(user));
-
-							return new ResponseEntity<ResponseStructure<UserResponse>>(structure,HttpStatus.OK);
-
+							return ResponseEntityProxy.setResponseStructure(HttpStatus.OK,
+									"subject assigned to teacher successfully",
+									mapToUserResponse(user));
 						})
 
 

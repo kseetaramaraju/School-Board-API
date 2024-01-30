@@ -1,13 +1,17 @@
 package com.school.sba.entity;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.school.sba.enums.ProgramType;
 import com.school.sba.enums.UserRole;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,13 +21,15 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
 @Builder
 public class User {
 	
@@ -43,12 +49,13 @@ public class User {
 	
 	private boolean isDeleted;
 	
+	@Enumerated(EnumType.STRING)
 	private UserRole userRole;
 	
 	@ManyToOne
 	private School school;
 
-	@ManyToMany(mappedBy = "users")
+	@ManyToMany
 	private List<AcademicProgram> academicPrograms;
 	
 	@ManyToOne

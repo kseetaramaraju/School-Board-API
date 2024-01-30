@@ -1,5 +1,7 @@
 package com.school.sba.responsedto;
 
+import java.time.DayOfWeek;
+
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +21,6 @@ public class SchoolResponse {
 	private long contactNo;
 	private String emailId;
 	private String address;
-	
+	private DayOfWeek weekOffDay; 
 
 }

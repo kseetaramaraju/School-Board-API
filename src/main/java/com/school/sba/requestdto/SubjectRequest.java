@@ -2,17 +2,27 @@ package com.school.sba.requestdto;
 
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Setter
+@Getter
 public class SubjectRequest {
 
 	private List<String> subjectNames;
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder builder=new StringBuilder("");
+		
+		for(String s:subjectNames)
+		{
+			builder.append(s+" ");
+		}
+		String ss=builder.toString();
+		
+		return ss;
+	}
 	
 }

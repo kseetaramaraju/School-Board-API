@@ -40,7 +40,7 @@ public class SchoolServiceImpl implements SchoolService{
 
 	//Mapping SchoolRequestObject to School Object
 
-	private School mapToSchool(SchoolRequest schoolRequest)
+	public School mapToSchool(SchoolRequest schoolRequest)
 	{
 		return School.builder()
 				.schoolName(schoolRequest.getSchoolName())
@@ -50,7 +50,7 @@ public class SchoolServiceImpl implements SchoolService{
 				.build();
 	}
 
-	private SchoolResponse mapToSchoolResponse(School school)
+	public SchoolResponse mapToSchoolResponse(School school)
 	{
 		return SchoolResponse.builder()
 				.schoolId(school.getSchoolId())
@@ -58,6 +58,7 @@ public class SchoolServiceImpl implements SchoolService{
 				.contactNo(school.getContactNo())
 				.emailId(school.getEmailId())
 				.address(school.getAddress())
+				.weekOffDay(school.getWeekOffDay())
 				.build();
 	}
 
